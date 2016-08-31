@@ -30,7 +30,7 @@ def get_db():
     #  if db is None:
     #      db = g._database = sqlite3.connect(DATABASE)
     #  return db
-    if not hasattr(g, 'sqlite_db'):
+    if not hasattr(g, 'flaskr.db'):
         g.sqlite_db = connect_db()
     return g.sqlite_db
 
@@ -39,7 +39,7 @@ def close_db(exception):
     #  db = getattr(g, '_database', None)
     #  if db is not None:
     #      db.close()
-    if hasattr(g, 'sqlite_db'):
+    if hasattr(g, 'flaskr.db'):
         g.sqlite_db.close()
 
 def init_db():
@@ -56,30 +56,34 @@ def init_db_command():
 
 @app.route('/')
 def show_entries():
-    cur = g.db.execute('select title, text, from entries order by id desc')
-    entries = [dict(title=row[0], text=row[1]) for row in cur.fetchall()]
+    db = get_db()
+    cur = db.execute('select title, text from entries order by id desc')
+    #entries = [dict(title=row[0], text=row[1]) for row in cur.fetchall()]
+    entries = cur.fetchall()
     return render_template('show_entries.html', entries=entries)
 
 @app.route('/add', methods=['POST'])
 def add_entry():
     if not session.get('logged_in'):
         abort(401)
-    g.db.execute('insert into entries (title, text) values (?, ?)',
+    db = get_db()
+    print db
+    db.execute('insert into entries (title, text) values (?, ?)',
                  [request.form['title'], request.form['text']])
-    g.db.commit()
+    db.commit()
     flash('New entry was successfully posted')
     return redirect(url_for('show_entries'))
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     error = None
-    if request.method == 'POSE':
+    if request.method == 'POST':
         if request.form['username'] != app.config['USERNAME']:
             error = 'Invalid username'
         elif request.form['password'] != app.config['PASSWORD']:
             erro = 'Invalid password'
         else:
-            sessio['logged_id'] = True
+            session['logged_id'] = True
             flash('You were logged in')
             return redirect(url_for('show_entries'))
     return render_template('login.html', error=error)
