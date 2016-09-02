@@ -1,19 +1,9 @@
-<!-- {% macro render_data(data) %} -->
-<!-- <li> {{data}} </li> -->
-<!-- {% endmacro %} -->
-<!--  -->
-<!-- {% for k, v in datas.items() %} -->
-<!--     <li>{{k}}, {{v}}</li> -->
-<!-- {% endfor %} -->
-<!-- {% for i in lst %} -->
-<!--     {{ render_data(i) }} -->
-<!-- {% endfor %} -->
-<!-- [> <h1> Hello, {{ name }}, you age is {{age}}! </h1> <] -->
-
-{% extends 'bootstrap/base.html' %}
+{% extends 'base.html' %}
 
 {% block title %} Flask {% endblock %}
 
-{% block navbar %}
-
+{% block page_content %}
+<div class="page-header">
+    <h1> Hello, {{ name }}! </h1>
+</div>
 {% endblock %}
